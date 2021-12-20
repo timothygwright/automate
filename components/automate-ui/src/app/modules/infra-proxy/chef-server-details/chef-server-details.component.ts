@@ -13,11 +13,11 @@ import { Regex } from 'app/helpers/auth/regex';
 import { LayoutFacadeService, Sidebar } from 'app/entities/layout/layout.facade';
 import { pending, EntityStatus, allLoaded } from 'app/entities/entities';
 import {
-  getStatus, serverFromRoute, updateStatus, getUsers, getUsersStatus
+  getStatus, serverFromRoute, updateStatus, getUsers, getUsersStatus, validateWebUIKeyStatus
 } from 'app/entities/servers/server.selectors';
 
 import { Server } from 'app/entities/servers/server.model';
-import { GetServer, UpdateServer
+import { GetServer, UpdateServer, ValidateWebUIKey
   // , GetUsers
 } from 'app/entities/servers/server.actions';
 import { GetOrgs, CreateOrg, DeleteOrg } from 'app/entities/orgs/org.actions';
@@ -30,6 +30,7 @@ import {
   deleteStatus as deleteOrgStatus
 } from 'app/entities/orgs/org.selectors';
 import { ProjectConstants } from 'app/entities/projects/project.model';
+// import { ValidateWebUIKeyResponse } from 'app/entities/servers/server.requests';
 
 export type ChefServerTabName = 'orgs' | 'users' | 'details';
 @Component({
@@ -65,7 +66,7 @@ export class ChefServerDetailsComponent implements OnInit, OnDestroy {
   public users;
   public usersListLoading;
   public authFailure = false;
-  public isValid = false;
+  public isValid;
 
   constructor(
     private fb: FormBuilder,
@@ -164,6 +165,23 @@ export class ChefServerDetailsComponent implements OnInit, OnDestroy {
       this.creatingServerOrg = false;
       this.orgsListLoading = false;
       this.closeCreateModal();
+    });
+
+    // valiate the webui key
+    this.store.pipe(
+      filter(identity),
+      takeUntil(this.isDestroyed))
+      .subscribe(() => {
+        debugger
+        this.store.dispatch(new ValidateWebUIKey(this.server));
+      });
+
+    this.store.select(validateWebUIKeyStatus).pipe(
+      filter(status => status === EntityStatus.loadingSuccess),
+      takeUntil(this.isDestroyed))
+      .subscribe((validateWebuiKey) => {
+        debugger
+        this.isValid = validateWebuiKey;
     });
 
     combineLatest([
