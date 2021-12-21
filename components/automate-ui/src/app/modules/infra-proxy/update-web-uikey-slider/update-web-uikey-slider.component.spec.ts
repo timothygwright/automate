@@ -71,7 +71,7 @@ describe('UpdateWebUIKeySliderComponent', () => {
         expect(updateKeyForm.valid).toBeFalsy();
         expect(errors['required']).toBeTruthy();
       });
-
+    });
     describe('the form should be valid', () => {
       it('when all inputs are filled and valid', () => {
         expect(updateKeyForm.valid).toBeFalsy();
@@ -130,7 +130,7 @@ describe('UpdateWebUIKeySliderComponent', () => {
 
     it('hide slider after updating webuikey.', () => {
       component.updateKeyForm.controls['webuikey'].setValue(webuikey.key);
-      component.onSubmit();
+      component.slidePanel;
 
       store.dispatch(new UpdateWebUIKeySuccess(
         { server_id: key.server_id, key: key.key}));
@@ -138,7 +138,7 @@ describe('UpdateWebUIKeySliderComponent', () => {
 
     it('on create , slider is closed with failure banner', () => {
       component.updateKeyForm.controls['webuikey'].setValue(webuikey.key);
-      component.onSubmit();
+      component.slidePanel;
 
       const error = <HttpErrorResponse>{
         status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -148,5 +148,4 @@ describe('UpdateWebUIKeySliderComponent', () => {
       expect(component.conflictError).toBe(false);
     });
   });
- });
 });
